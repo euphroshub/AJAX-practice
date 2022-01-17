@@ -243,3 +243,53 @@ TEST COORDINATES 2: -33.933, 18.474
 whereAmI(52.508, 13.381);
 whereAmI(19.037, 72.873);
 whereAmI(-33.933, 18.474); */
+
+// Testing the JS event loop
+/* console.log('Test Start'); // 1
+setTimeout(() => console.log('0 sec timer'), 0); // 5
+
+Promise.resolve('Resolved promise 1').then(res => console.log(res)); // 3
+
+Promise.resolve('Resolved promise 2').then(res => { // 4
+    for (let i = 0; i < 100000; i++) {}
+    console.log(res);
+})
+
+console.log('Test end'); // 2
+ */
+
+
+// Building promises - takes 1 argument (executor func)
+const lotteryPromise = new Promise(function(resolve, reject) {
+    console.log('Lottery draw is happening.')
+    setTimeout(function() {
+        if (Math.random() >= 0.5) {
+            resolve('you win');
+        } else {
+            reject(new Error('you lost your money.'));
+        }
+    }, 2000)
+});
+
+// consuming the promise built before
+lotteryPromise.then(res => console.log(res)).catch(err => console.error(err));
+
+// Promisifying setTimeout (function that returns a promise - more real world example)
+// can simplify with arrow function instead
+const wait = function(seconds) {
+    return new Promise(function(resolve) {
+        setTimeout(resolve, seconds * 1000);
+    });
+}
+
+// Consuming it
+wait(2).then(() => {
+    console.log('I waited 2 seconds');
+
+    // have to return a new promise
+    return wait(1);
+}).then(() => console.log('I waited 1 second'));
+
+// static method on the promise constructor - resolve immediatly
+Promise.resolve('abc').then(x => console.log(x));
+Promise.reject(new Error('Panic')).catch(x => console.error(x));
